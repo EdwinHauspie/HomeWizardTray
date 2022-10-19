@@ -30,16 +30,16 @@ namespace HomeWizardTray
 
             using (var bitmap = new Bitmap(16, 16))
             using (var activeFillBrush = new SolidBrush(activeColor))
-            using (var inactiveFillBrush = new SolidBrush(Color.FromArgb(255, 80, 80, 80)))
+            using (var inactiveFillBrush = new SolidBrush(Color.FromArgb(255, 100, 100, 100)))
             {
                 //Define rectangles
                 var bars = new List<Rectangle>
                 {
-                    new Rectangle(1, 11, 2, 2),
-                    new Rectangle(4, 9, 2, 4),
-                    new Rectangle(7, 7, 2, 6),
-                    new Rectangle(10, 5, 2, 8),
-                    new Rectangle(13, 3, 2, 10)
+                    new Rectangle(1, 9, 2, 6),
+                    new Rectangle(4, 7, 2, 8),
+                    new Rectangle(7, 5, 2, 10),
+                    new Rectangle(10, 3, 2, 12),
+                    new Rectangle(13, 1, 2, 14)
                 };
 
                 //Draw rectangles

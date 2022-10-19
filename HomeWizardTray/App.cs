@@ -35,8 +35,8 @@ namespace HomeWizardTray
 
             if (!valid)
             {
-                var msg = $"{err}\r\nCheck appSettings.json file.";
-                MessageBox.Show(msg, "Invalid appsettings", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var msg = $"{err}\r\nCheck the settings file.";
+                MessageBox.Show(msg, "Invalid settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return valid;
