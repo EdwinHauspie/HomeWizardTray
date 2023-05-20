@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using Microsoft.Extensions.Configuration;
-using HomeWizardTray.Extensions;
 
 namespace HomeWizardTray
 {
@@ -12,32 +10,25 @@ namespace HomeWizardTray
             config.Bind(this);
         }
 
-        public string Color { get; set; }
         public string Format { get; set; }
         public string IpAddress { get; set; }
-        public uint[] Thresholds { get; set; }
+        public int UpdateInterval { get; set; }
 
         public bool Validate(out string error)
         {
             if (!IPAddress.TryParse(IpAddress, out var _))
             {
-                error = "Invalid IP address provided.";
+                error = "Invalid IP address.";
                 return false;
             }
 
-            //TODO check if ip is the P1 meter
-
-            if (Thresholds.Length != 5 || Thresholds.Any(t => t <= 0))
+            if (UpdateInterval < 100)
             {
-                error = "Invalid thresholds provided.";
+                error = "Invalid udate interval.";
                 return false;
             }
 
-            if (!Color.IsValidHexColor())
-            {
-                error = "Invalid hexadecimal color.";
-                return false;
-            }
+            //TODO check if ip is the HW P1 meter
 
             error = null;
             return true;

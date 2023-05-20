@@ -28,7 +28,6 @@ namespace HomeWizardTray
             {
                 services.AddSingleton<AppSettings>();
                 services.AddHttpClient<DataProvider>();
-                services.AddSingleton<BarIcons>();
                 services.AddTransient<App>();
             });
         }

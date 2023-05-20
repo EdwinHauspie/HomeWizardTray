@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Linq;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using HomeWizardTray.Providers;
 using Timer = System.Timers.Timer;
@@ -10,15 +11,13 @@ namespace HomeWizardTray
     {
         private readonly AppSettings _appSettings;
         private readonly DataProvider _dataProvider;
-        private readonly BarIcons _barIcons;
         private NotifyIcon _trayIcon;
         private Timer _timer;
 
-        public App(AppSettings appSettings, DataProvider dataProvider, BarIcons barIcons)
+        public App(AppSettings appSettings, DataProvider dataProvider)
         {
             _appSettings = appSettings;
             _dataProvider = dataProvider;
-            _barIcons = barIcons;
 
             if (ValidateAppSettings())
             {
@@ -35,7 +34,7 @@ namespace HomeWizardTray
 
             if (!valid)
             {
-                var msg = $"{err}\r\nCheck the settings file.";
+                var msg = $"{err}\r\nCheck appSettings.json";
                 MessageBox.Show(msg, "Invalid settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -44,10 +43,17 @@ namespace HomeWizardTray
 
         private void SetupIcon()
         {
-            _trayIcon = new NotifyIcon { Icon = _barIcons.NoBars, Visible = true };
-            _trayIcon.Click += (object sender, EventArgs e) => { if (((MouseEventArgs)e).Button == MouseButtons.Middle) Exit(); };
+            _trayIcon = new NotifyIcon
+            {
+                Icon = Icon.FromHandle(Resources.Sun.GetHicon()),
+                Visible = true,
+                ContextMenuStrip = new ContextMenuStrip() { ShowImageMargin = false }
 
-            _timer = new Timer(2000);
+            };
+            _trayIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("Quit", null, (s, e) => Exit()));
+            _trayIcon.Click += (s, e) => { if (((MouseEventArgs)e).Button == MouseButtons.Middle) Exit(); };
+
+            _timer = new Timer(_appSettings.UpdateInterval);
             _timer.Elapsed += (sender, args) => UpdateIcon();
             _timer.Start();
         }
@@ -55,18 +61,12 @@ namespace HomeWizardTray
         private async void UpdateIcon()
         {
             var data = await _dataProvider.GetData();
-
-            var iconIndex = 0;
-            _appSettings.Thresholds.ToList().ForEach(threshold => iconIndex += data.ActivePower > threshold ? 1 : 0);
-
             _trayIcon.Text = string.Format(_appSettings.Format, data.ActivePower);
-            _trayIcon.Icon = _barIcons.Icons[iconIndex];
         }
 
         public void Exit(int exitCode = 0)
         {
             if (_trayIcon != null) _trayIcon.Visible = false;
-            //Application.Exit();
             Environment.Exit(exitCode);
         }
     }
