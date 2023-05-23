@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using Log = Serilog.Log;
 using Microsoft.Extensions.Configuration;
 
 namespace HomeWizardTray
@@ -7,31 +8,21 @@ namespace HomeWizardTray
     {
         public AppSettings(IConfiguration config)
         {
-            config.Bind(this);
+            try
+            {
+                config.Bind(this);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                throw;
+            }
         }
 
-        public string Format { get; set; }
-        public string IpAddress { get; set; }
-        public int UpdateInterval { get; set; }
+        public string Format { get; set; } = "{0}W";
+        public ushort UpdateIntervalSeconds { get; set; } = 3;
 
-        public bool Validate(out string error)
-        {
-            if (!IPAddress.TryParse(IpAddress, out var _))
-            {
-                error = "Invalid IP address.";
-                return false;
-            }
-
-            if (UpdateInterval < 100)
-            {
-                error = "Invalid udate interval.";
-                return false;
-            }
-
-            //TODO check if ip is the HW P1 meter
-
-            error = null;
-            return true;
-        }
+        public string HomeWizardIpAddress { get; set; } = "127.0.0.1";
+        public string SunnyBoyIpAddress { get; set; } = "127.0.0.1";
     }
 }

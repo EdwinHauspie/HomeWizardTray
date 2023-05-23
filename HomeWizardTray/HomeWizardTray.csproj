@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
-    <ApplicationIcon>sun.ico</ApplicationIcon>
+    <ApplicationIcon>Assets/sun.ico</ApplicationIcon>
     <PackageId>SunnyTray</PackageId>
     <Title>SunnyTray</Title>
     <Authors>SunnyTray</Authors>
@@ -15,7 +15,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="sun.ico" />
+    <Compile Remove="DataProviders\SunnyBoyDataProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\sun.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="DataProviders\SunnyBoyDataProvider.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,10 +31,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources.Designer.cs">
+    <Compile Update="Assets\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -34,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resources.resx">
+    <EmbeddedResource Update="Assets\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>

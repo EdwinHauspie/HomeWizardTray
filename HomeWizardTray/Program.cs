@@ -1,6 +1,7 @@
 using System;
+using Serilog;
 using System.Windows.Forms;
-using HomeWizardTray.Providers;
+using HomeWizardTray.DataProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,24 +13,24 @@ namespace HomeWizardTray
         [STAThread]
         static void Main()
         {
+            Log.Logger = new LoggerConfiguration().WriteTo.File("log.txt").CreateLogger();
+
             var configBuilder = new ConfigurationBuilder().AddJsonFile("appSettings.json", false);
             configBuilder.Build();
 
-            var hostBuilder = CreateHostBuilder();
+            var hostBuilder = Host
+                .CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddSingleton<AppSettings>();
+                    services.AddHttpClient<HomeWizardDataProvider>();
+                    services.AddTransient<App>();
+                });
+
             var host = hostBuilder.Build();
-
             var app = host.Services.GetRequiredService<App>();
-            Application.Run(app);
-        }
 
-        static IHostBuilder CreateHostBuilder()
-        {
-            return Host.CreateDefaultBuilder().ConfigureServices((context, services) =>
-            {
-                services.AddSingleton<AppSettings>();
-                services.AddHttpClient<DataProvider>();
-                services.AddTransient<App>();
-            });
+            Application.Run(app);
         }
     }
 }
