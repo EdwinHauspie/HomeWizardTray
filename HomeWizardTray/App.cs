@@ -11,13 +11,15 @@ namespace HomeWizardTray
     {
         private readonly AppSettings _appSettings;
         private readonly HomeWizardDataProvider _homeWizardDataProvider;
+        private readonly SunnyBoyDataProvider _sunnyBoyDataProvider;
         private readonly NotifyIcon _trayIcon;
         private readonly Timer _timer;
 
-        public App(AppSettings appSettings, HomeWizardDataProvider homeWizardDataProvider)
+        public App(AppSettings appSettings, HomeWizardDataProvider homeWizardDataProvider, SunnyBoyDataProvider sunnyBoyDataProvider)
         {
             _appSettings = appSettings;
             _homeWizardDataProvider = homeWizardDataProvider;
+            _sunnyBoyDataProvider = sunnyBoyDataProvider;
             _trayIcon = CreateNotifyIcon();
             _timer = CreateTimer();
             UpdateIconText();
@@ -46,8 +48,15 @@ namespace HomeWizardTray
             try
             {
                 _timer.Stop();
-                var activePower = await _homeWizardDataProvider.GetActivePower();
-                _trayIcon.Text = string.Format(_appSettings.Format, activePower);
+
+                var hwPower = await _homeWizardDataProvider.GetActivePower();
+                var hwText = string.Format(_appSettings.Format, hwPower);
+                
+                var sunnyPower = await _sunnyBoyDataProvider.GetActivePower();
+                var sunnyText = string.Format(_appSettings.Format, sunnyPower);
+
+                _trayIcon.Text = $"Sunny Boy    {sunnyText}\r\nP1 Meter     {(hwText.StartsWith("-") ? hwText : (" " + hwText))}";
+
                 _timer.Start();
             }
             catch (Exception ex)

@@ -5,6 +5,7 @@ using HomeWizardTray.DataProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace HomeWizardTray
 {
@@ -23,7 +24,16 @@ namespace HomeWizardTray
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSingleton<AppSettings>();
+
                     services.AddHttpClient<HomeWizardDataProvider>();
+
+                    services
+                        .AddHttpClient<SunnyBoyDataProvider>()
+                        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                        {
+                            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                        });
+
                     services.AddTransient<App>();
                 });
 

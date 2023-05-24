@@ -15,15 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DataProviders\SunnyBoyDataProvider.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\sun.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <SplashScreen Include="DataProviders\SunnyBoyDataProvider.cs" />
   </ItemGroup>
 
   <ItemGroup>
