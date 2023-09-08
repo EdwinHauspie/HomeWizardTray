@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace HomeWizardTray.DataProviders.HomeWizard
 {
-    internal sealed partial class HomeWizardDataProvider
+    internal sealed class HomeWizardDataProvider
     {
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;

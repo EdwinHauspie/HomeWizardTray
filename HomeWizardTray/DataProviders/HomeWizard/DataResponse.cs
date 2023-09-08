@@ -2,12 +2,9 @@
 
 namespace HomeWizardTray.DataProviders.HomeWizard
 {
-    internal sealed partial class HomeWizardDataProvider
+    internal sealed class DataResponse
     {
-        private class DataResponse
-        {
-            [JsonProperty("active_power_w")]
-            public int ActivePower { get; set; }
-        }
+        [JsonProperty("active_power_w")]
+        public int ActivePower { get; set; }
     }
 }

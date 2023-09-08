@@ -1,15 +1,12 @@
 ﻿namespace HomeWizardTray.DataProviders.SunnyBoy
 {
-    internal sealed partial class SunnyBoyDataProvider
+    internal sealed class LoginResponse
     {
-        private class LoginResponse
-        {
-            public LoginResult Result { get; set; }
-        }
+        public LoginResult Result { get; set; }
+    }
 
-        public class LoginResult
-        {
-            public string Sid { get; set; }
-        }
+    internal sealed class LoginResult
+    {
+        public string Sid { get; set; }
     }
 }

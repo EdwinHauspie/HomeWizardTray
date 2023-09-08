@@ -9,7 +9,7 @@ using System;
 
 namespace HomeWizardTray.DataProviders.SunnyBoy
 {
-    internal sealed partial class SunnyBoyDataProvider
+    internal sealed class SunnyBoyDataProvider
     {
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;

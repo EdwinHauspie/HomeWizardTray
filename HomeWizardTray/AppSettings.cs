@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace HomeWizardTray
 {
-    internal class AppSettings
+    internal sealed class AppSettings
     {
         public AppSettings(IConfiguration config)
         {

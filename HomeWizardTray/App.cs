@@ -8,7 +8,7 @@ using Timer = System.Timers.Timer;
 
 namespace HomeWizardTray
 {
-    internal class App : ApplicationContext
+    internal sealed class App : ApplicationContext
     {
         private readonly AppSettings _appSettings;
         private readonly HomeWizardDataProvider _homeWizardDataProvider;
