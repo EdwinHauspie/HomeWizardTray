@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace HomeWizardTray.DataProviders
+namespace HomeWizardTray.DataProviders.HomeWizard
 {
-    internal sealed class HomeWizardDataProvider
+    internal sealed partial class HomeWizardDataProvider
     {
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;
@@ -22,12 +22,6 @@ namespace HomeWizardTray.DataProviders
             var dataResponseJson = await _httpClient.GetStringAsync(_dataUrl);
             var dataResponse = JsonConvert.DeserializeObject<DataResponse>(dataResponseJson);
             return dataResponse.ActivePower;
-        }
-
-        private class DataResponse
-        {
-            [JsonProperty("active_power_w")]
-            public int ActivePower { get; set; }
         }
     }
 }

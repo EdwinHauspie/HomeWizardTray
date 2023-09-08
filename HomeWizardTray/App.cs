@@ -2,7 +2,8 @@
 using Serilog;
 using System.Windows.Forms;
 using HomeWizardTray.Assets;
-using HomeWizardTray.DataProviders;
+using HomeWizardTray.DataProviders.HomeWizard;
+using HomeWizardTray.DataProviders.SunnyBoy;
 using Timer = System.Timers.Timer;
 
 namespace HomeWizardTray
@@ -61,7 +62,7 @@ namespace HomeWizardTray
             }
             catch (Exception ex)
             {
-                _trayIcon.Text = "An error has occured. See log file.";
+                _trayIcon.Text = "An error has occured. Please see the log file.";
                 Log.Error(ex, ex.Message);
             }
         }

@@ -11,6 +11,16 @@ namespace HomeWizardTray
             try
             {
                 config.Bind(this);
+
+                if (string.IsNullOrWhiteSpace(SunnyBoyUsername))
+                {
+                    throw new Exception($"{nameof(SunnyBoyUsername)} can not be null or empty. Please check the app settings file.");
+                }
+
+                if (string.IsNullOrWhiteSpace(SunnyBoyPassword))
+                {
+                    throw new Exception($"{nameof(SunnyBoyPassword)} can not be null or empty. Please check the app settings file.");
+                }
             }
             catch (Exception ex)
             {
@@ -21,11 +31,9 @@ namespace HomeWizardTray
 
         public string Format { get; set; } = "{0} W";
         public ushort UpdateIntervalSeconds { get; set; } = 3;
-
         public string HomeWizardIpAddress { get; set; } = "127.0.0.1";
-
         public string SunnyBoyIpAddress { get; set; } = "127.0.0.1";
-        public string SunnyBoyUser { get; set; } = "usr";
-        public string SunnyBoyPass { get; set; } = "";
+        public string SunnyBoyUsername { get; set; } = "usr";
+        public string SunnyBoyPassword { get; set; } = "";
     }
 }
