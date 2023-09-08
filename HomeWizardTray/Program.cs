@@ -46,7 +46,7 @@ namespace HomeWizardTray
                     })
                     .ConfigureAppConfiguration((ctx, builder) =>
                     {
-                        Log.Information($"Configuring app with {ctx.HostingEnvironment.EnvironmentName} environment.");
+                        Log.Information($"App running in {ctx.HostingEnvironment.EnvironmentName} environment.");
 
                         if (ctx.HostingEnvironment.IsDevelopment())
                         {
@@ -56,8 +56,6 @@ namespace HomeWizardTray
                     .Build();
 
                 Log.Information("Running app.");
-
-
                 var app = host.Services.GetRequiredService<App>();
                 Application.Run(app);
             }

@@ -29,7 +29,6 @@ namespace HomeWizardTray
             }
         }
 
-        public string Format { get; set; } = "{0} W";
         public ushort UpdateIntervalSeconds { get; set; } = 3;
         public string HomeWizardIpAddress { get; set; } = "127.0.0.1";
         public string SunnyBoyIpAddress { get; set; } = "127.0.0.1";
