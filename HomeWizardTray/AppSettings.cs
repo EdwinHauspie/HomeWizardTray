@@ -1,6 +1,7 @@
 ﻿using System;
 using Log = Serilog.Log;
 using Microsoft.Extensions.Configuration;
+using HomeWizardTray.DataProviders.Sma;
 
 namespace HomeWizardTray
 {
@@ -12,14 +13,9 @@ namespace HomeWizardTray
             {
                 config.Bind(this);
 
-                if (string.IsNullOrWhiteSpace(SunnyBoyUsername))
+                if (string.IsNullOrWhiteSpace(SunnyBoyPass))
                 {
-                    throw new Exception($"{nameof(SunnyBoyUsername)} can not be null or empty. Please check the app settings file.");
-                }
-
-                if (string.IsNullOrWhiteSpace(SunnyBoyPassword))
-                {
-                    throw new Exception($"{nameof(SunnyBoyPassword)} can not be null or empty. Please check the app settings file.");
+                    throw new Exception($"{nameof(SunnyBoyPass)} can not be null or empty. Please check the app settings file.");
                 }
             }
             catch (Exception ex)
@@ -30,9 +26,10 @@ namespace HomeWizardTray
         }
 
         public ushort UpdateIntervalSeconds { get; set; } = 3;
-        public string HomeWizardIpAddress { get; set; } = "127.0.0.1";
-        public string SunnyBoyIpAddress { get; set; } = "127.0.0.1";
-        public string SunnyBoyUsername { get; set; } = "usr";
-        public string SunnyBoyPassword { get; set; } = "";
+        public string Ftxm25IpAddress {get; set;}
+        public string P1MeterIpAddress { get; set; }
+        public string SunnyBoyIpAddress { get; set; }
+        public User SunnyBoyUser { get; set; }
+        public string SunnyBoyPass { get; set; }
     }
 }

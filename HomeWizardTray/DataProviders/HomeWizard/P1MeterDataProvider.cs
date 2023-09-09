@@ -4,22 +4,22 @@ using System.Threading.Tasks;
 
 namespace HomeWizardTray.DataProviders.HomeWizard
 {
-    internal sealed class HomeWizardDataProvider
+    internal sealed class P1MeterDataProvider
     {
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;
-        private readonly string _dataUrl;
+        private readonly string _baseUrl;
 
-        public HomeWizardDataProvider(HttpClient httpClient, AppSettings appSettings)
+        public P1MeterDataProvider(HttpClient httpClient, AppSettings appSettings)
         {
             _httpClient = httpClient;
             _appSettings = appSettings;
-            _dataUrl = $"http://{_appSettings.HomeWizardIpAddress}/api/v1/data";
+            _baseUrl = $"http://{_appSettings.P1MeterIpAddress}";
         }
 
         public async Task<int> GetActivePower()
         {
-            var dataResponseJson = await _httpClient.GetStringAsync(_dataUrl);
+            var dataResponseJson = await _httpClient.GetStringAsync($"{_baseUrl}/api/v1/data");
             var dataResponse = JsonConvert.DeserializeObject<DataResponse>(dataResponseJson);
             return dataResponse.ActivePower;
         }

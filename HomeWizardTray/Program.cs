@@ -5,8 +5,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
-using HomeWizardTray.DataProviders.SunnyBoy;
+using HomeWizardTray.DataProviders.Sma;
 using HomeWizardTray.DataProviders.HomeWizard;
+using HomeWizardTray.DataProviders.Daikin;
 
 namespace HomeWizardTray
 {
@@ -29,15 +30,15 @@ namespace HomeWizardTray
                     .CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
                     {
-                        services.AddMemoryCache();
                         services.AddSingleton<AppSettings>();
-                        services.AddHttpClient<HomeWizardDataProvider>();
+                        services.AddHttpClient<Ftxm25DataProvider>();
+                        services.AddHttpClient<P1MeterDataProvider>();
 
                         services
                             .AddHttpClient<SunnyBoyDataProvider>()
-                            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
                             {
-                                // Accept broken or lacking certificate from SMA
+                                // Accept broken or lacking certificate from SMA Sunny Boy
                                 // TODO move and make it specific to the sunnyboy data provider class
                                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                             });
@@ -48,7 +49,7 @@ namespace HomeWizardTray
                     {
                         Log.Information($"App running in {ctx.HostingEnvironment.EnvironmentName} environment.");
 
-                        if (ctx.HostingEnvironment.IsDevelopment())
+                        //if (ctx.HostingEnvironment.IsDevelopment())
                         {
                             builder.AddUserSecrets<App>();
                         }

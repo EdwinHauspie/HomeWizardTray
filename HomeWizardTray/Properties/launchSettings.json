@@ -1,6 +1,6 @@
 {
     "profiles": {
-        "🔆🔆🔆 SunnyTray 🔆🔆🔆": {
+        "🔆 SunnyTray 🔆": {
             "commandName": "Project",
             "environmentVariables": {
                 "DOTNET_ENVIRONMENT": "Development"

@@ -1,4 +1,4 @@
-﻿namespace HomeWizardTray.DataProviders.SunnyBoy
+﻿namespace HomeWizardTray.DataProviders.Sma
 {
     internal sealed class LoginResponse
     {
