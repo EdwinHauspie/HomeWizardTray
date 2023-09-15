@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using HomeWizardTray.DataProviders.Daikin;
+using HomeWizardTray.Menu;
 
 namespace HomeWizardTray
 {
@@ -19,7 +20,6 @@ namespace HomeWizardTray
         private readonly SunnyBoyDataProvider _sunnyBoyDataProvider;
         private readonly Ftxm25DataProvider _ftxm25DataProvider;
 
-        private ContextMenuStrip Menu { get; set; }
         private NotifyIcon TrayIcon { get; set; }
         private Timer UpdateTimer { get; set; }
 
@@ -30,24 +30,31 @@ namespace HomeWizardTray
             _sunnyBoyDataProvider = sunnyBoyDataProvider;
             _ftxm25DataProvider = ftxm25DataProvider;
 
-            Menu = new ContextMenuStrip
+            async void onQuit(object s, EventArgs e) => await Exit();
+            async void onAircoStatus(object s, EventArgs e) { MessageBox.Show(await _ftxm25DataProvider.GetStatus(), "SunnyTray"); }
+
+            var menu = new[]
             {
-                ShowImageMargin = false,
-                Font = new Font("Segoe ui", 11f),
-                // TODO Opkuis van class CustomToolStripRenderer
-                Renderer = new CustomToolStripRenderer(Color.White, Color.FromArgb(26, 28, 35), Color.FromArgb(26, 28, 35), Color.FromArgb(39, 41, 48), Color.BlueViolet, 4)
+                new MenuItem("Airco", new []
+                {
+                    new MenuItem("Presets", new []
+                    {
+                        new MenuItem("Max", async (s, e) => { await _ftxm25DataProvider.SetMax(); }),
+                        new MenuItem("Normal", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
+                        new MenuItem("Eco", async (s, e) => { await _ftxm25DataProvider.SetEco(); }),
+                        new MenuItem("Dehumidify", async (s, e) => { await _ftxm25DataProvider.SetDehumidify(); }),
+                    }),
+                    new MenuItem("Power", new []
+                    {
+                        new MenuItem("On", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
+                        new MenuItem("Off", async (s, e) => { await _ftxm25DataProvider.SetOff(); })
+                    }),
+                    new MenuItem("Status", onAircoStatus)
+                }),
+                new MenuItem("Quit", onQuit)
             };
 
-            Menu.Items.Add(new ToolStripMenuItem("Airco"));
-            ((Menu.Items[0] as ToolStripMenuItem).DropDown as ToolStripDropDownMenu).ShowImageMargin = false;
-            (Menu.Items[0] as ToolStripMenuItem).DropDownItems.Add(new ToolStripMenuItem("Status", null, async (s, e) => { MessageBox.Show(JsonConvert.SerializeObject(await _ftxm25DataProvider.GetInfo(), Formatting.Indented), "SunnyTray", MessageBoxButtons.OK, MessageBoxIcon.Information); }));
-            (Menu.Items[0] as ToolStripMenuItem).DropDownItems.Add(new ToolStripMenuItem("Max", null, async (s, e) => { await _ftxm25DataProvider.SetMax(); }));
-            (Menu.Items[0] as ToolStripMenuItem).DropDownItems.Add(new ToolStripMenuItem("Normal", null, async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }));
-            (Menu.Items[0] as ToolStripMenuItem).DropDownItems.Add(new ToolStripMenuItem("Eco", null, async (s, e) => { await _ftxm25DataProvider.SetEco(); }));
-
-            Menu.Items.Add(new ToolStripMenuItem("Quit", null, async (s, e) => await Exit()));
-
-            TrayIcon = new NotifyIcon { Text = "SunnyTray", Icon = Resources.SunIcon, Visible = true, ContextMenuStrip = Menu };
+            TrayIcon = new NotifyIcon { Text = "SunnyTray", Icon = Resources.SunIcon, Visible = true, ContextMenuStrip = MenuBuilder.Build(menu) };
             TrayIcon.Click += async (s, e) => { if (((MouseEventArgs)e).Button == MouseButtons.Middle) await Exit(); };
 
             UpdateTimer = new Timer();
@@ -63,7 +70,12 @@ namespace HomeWizardTray
 
                 var sunnyPower = await _sunnyBoyDataProvider.GetActivePower();
                 var homeWizardPower = await _homeWizardDataProvider.GetActivePower();
-                TrayIcon.Text = $"🔆   {sunnyPower} W\r\n💡 {(homeWizardPower < 0 ? "" : "  ")}{homeWizardPower.ToString().Replace("-", "–")} W";
+
+                TrayIcon.Text = $"""
+                🔆 {FormatPower(sunnyPower)}
+                🔌 {FormatPower(homeWizardPower)}
+                💡 {FormatPower(sunnyPower + homeWizardPower)}
+                """;
 
                 UpdateTimer.Interval = TimeSpan.FromSeconds(_appSettings.UpdateIntervalSeconds).TotalMilliseconds;
                 UpdateTimer.Start();
@@ -75,10 +87,18 @@ namespace HomeWizardTray
             }
         }
 
+        private static string FormatPower(int power)
+        {
+            // Justify text with repeated "thick space" character
+            // https://unicode-explorer.com/c/2004
+            var fillout = 6 - power.ToString().Length;
+            return $"{new string(' ', fillout)} {power} W".Replace("-", "–");
+        }
+
         public async Task Exit(int exitCode = 0)
         {
             UpdateTimer.Stop();
-            await _sunnyBoyDataProvider.Logout(); //TODO make disposable instead?
+            await _sunnyBoyDataProvider.Logout(); // TODO make disposable instead?
             if (TrayIcon != null) TrayIcon.Visible = false;
             Environment.Exit(exitCode);
         }

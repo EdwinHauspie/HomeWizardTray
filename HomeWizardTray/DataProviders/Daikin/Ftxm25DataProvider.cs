@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Web;
+using Newtonsoft.Json;
+using Dic = System.Collections.Generic.Dictionary<string, string>;
 
 namespace HomeWizardTray.DataProviders.Daikin
 {
@@ -19,7 +20,27 @@ namespace HomeWizardTray.DataProviders.Daikin
             _baseUrl = $"http://{_appSettings.Ftxm25IpAddress}";
         }
 
-        public async Task<Dictionary<string, string>> GetInfo()
+        public async Task<string> GetStatus()
+        {
+            var dic = await GetDic();
+
+            return JsonConvert.SerializeObject(new Dic
+            {
+                [nameof(Keys.Power)] = Power.GetName(dic[Keys.Power]),
+                [nameof(Keys.Mode)] = Mode.GetName(dic[Keys.Mode]),
+                [nameof(Keys.Temperature)] = dic[Keys.Temperature],
+                [nameof(Keys.Humidity)] = dic[Keys.Humidity],
+                [nameof(Keys.FanSpeed)] = FanSpeed.GetName(dic[Keys.FanSpeed]),
+                [nameof(Keys.FanMotion)] = FanMotion.GetName(dic[Keys.FanMotion]),
+            })
+                .Replace("{", "")
+                .Replace("}", "")
+                .Replace(":\"", " = ")
+                .Replace("\"", "")
+                .Replace(",", "\r\n");
+        }
+
+        private async Task<Dic> GetDic()
         {
             var dataResponse = await _httpClient.GetStringAsync($"{_baseUrl}/aircon/get_control_info");
             var toQueryString = dataResponse.Replace(",", "&");
@@ -29,69 +50,83 @@ namespace HomeWizardTray.DataProviders.Daikin
 
         public async Task SetMax()
         {
-            await SetControlInfo(new Dictionary<string, string>
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Econo, [Keys.SpecialModeState] = SpecialModeState.Off });
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Powerful, [Keys.SpecialModeState] = SpecialModeState.Off });
+
+            await SetControlInfo(new Dic
             {
                 [Keys.Power] = Power.On,
-                [Keys.Mode] = Mode.Cool,
+                [Keys.Mode] = Mode.Cooling,
                 [Keys.Temperature] = "18.0",
                 [Keys.Humidity] = "0",
                 [Keys.FanSpeed] = FanSpeed.Level5,
-                [Keys.FanMotion] = FanMotion.None,
-            });
-
-            await SetSpecialMode(new Dictionary<string, string>
-            {
-                [Keys.SpecialModeState] = SpecialModeState.Off,
-                [Keys.SpecialMode] = SpecialMode.Econo
+                [Keys.FanMotion] = FanMotion.None
             });
         }
 
         public async Task SetLevel2()
         {
-            await SetControlInfo(new Dictionary<string, string>
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Econo, [Keys.SpecialModeState] = SpecialModeState.Off });
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Powerful, [Keys.SpecialModeState] = SpecialModeState.Off });
+
+            await SetControlInfo(new Dic
             {
                 [Keys.Power] = Power.On,
-                [Keys.Mode] = Mode.Cool,
+                [Keys.Mode] = Mode.Cooling,
                 [Keys.Temperature] = "18.0",
                 [Keys.Humidity] = "0",
                 [Keys.FanSpeed] = FanSpeed.Level2,
-                [Keys.FanMotion] = FanMotion.None,
-            });
-
-            await SetSpecialMode(new Dictionary<string, string>
-            {
-                [Keys.SpecialMode] = SpecialMode.Econo,
-                [Keys.SpecialModeState] = SpecialModeState.Off,
+                [Keys.FanMotion] = FanMotion.None
             });
         }
 
         public async Task SetEco()
         {
-            await SetControlInfo(new Dictionary<string, string>
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Econo, [Keys.SpecialModeState] = SpecialModeState.On });
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Powerful, [Keys.SpecialModeState] = SpecialModeState.Off });
+
+            await SetControlInfo(new Dic
             {
                 [Keys.Power] = Power.On,
-                [Keys.Mode] = Mode.Cool,
+                [Keys.Mode] = Mode.Cooling,
                 [Keys.Temperature] = "18.0",
                 [Keys.Humidity] = "0",
                 [Keys.FanSpeed] = FanSpeed.Silent,
                 [Keys.FanMotion] = FanMotion.None,
             });
+        }
 
-            await SetSpecialMode(new Dictionary<string, string>
+        public async Task SetDehumidify()
+        {
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Econo, [Keys.SpecialModeState] = SpecialModeState.Off });
+            await SetSpecialMode(new Dic { [Keys.SpecialMode] = SpecialMode.Powerful, [Keys.SpecialModeState] = SpecialModeState.Off });
+
+            await SetControlInfo(new Dic
             {
-                [Keys.SpecialMode] = SpecialMode.Econo,
-                [Keys.SpecialModeState] = SpecialModeState.On,
+                [Keys.Power] = Power.On,
+                [Keys.Mode] = Mode.Dehumidify,
+                [Keys.Temperature] = "18.0",
+                [Keys.Humidity] = "0",
+                [Keys.FanSpeed] = FanSpeed.Auto,
+                [Keys.FanMotion] = FanMotion.None,
             });
         }
 
-        private async Task SetControlInfo(Dictionary<string, string> dic)
+        public async Task SetOff()
+        {
+            var dic = await GetDic();
+            dic[Keys.Power] = Power.Off;
+            await SetControlInfo(dic);
+        }
+
+        private async Task SetControlInfo(Dic dic)
         {
             var queryString = string.Join("&", dic.Select(kvp => $"{kvp.Key}={kvp.Value}"));
             var response = await _httpClient.PostAsync($"{_baseUrl}/aircon/set_control_info?{queryString}", null);
             var resonseBody = await response.Content.ReadAsStringAsync();
         }
 
-        private async Task SetSpecialMode(Dictionary<string, string> dic)
+        private async Task SetSpecialMode(Dic dic)
         {
             var queryString = string.Join("&", dic.Select(kvp => $"{kvp.Key}={kvp.Value}"));
             var response = await _httpClient.PostAsync($"{_baseUrl}/aircon/set_special_mode?{queryString}", null);

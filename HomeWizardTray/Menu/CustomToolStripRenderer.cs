@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
 
-namespace HomeWizardTray
+namespace HomeWizardTray.Menu
 {
     public class CustomToolStripRenderer : ToolStripProfessionalRenderer
     {
@@ -10,16 +10,14 @@ namespace HomeWizardTray
         public Color Background { get; set; }
         public Color HoverBackground { get; set; }
         public Color MarginBackground { get; set; }
-        public int VerticalPadding { get; set; }
 
-        public CustomToolStripRenderer(Color text, Color border, Color background, Color hoverBackground, Color marginBackground, int verticalPadding)
+        public CustomToolStripRenderer(Color text, Color border, Color background, Color hoverBackground, Color marginBackground)
         {
             Text = text;
             Border = border;
             Background = background;
             HoverBackground = hoverBackground;
             MarginBackground = marginBackground;
-            VerticalPadding = verticalPadding;
         }
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
@@ -40,11 +38,14 @@ namespace HomeWizardTray
             if (!e.Item.Selected)
             {
                 base.OnRenderMenuItemBackground(e);
+                return;
             }
             else
             {
-                var rc = new Rectangle(new Point(2, 0), new Size(e.Item.Size.Width - 3, e.Item.Size.Height));
-                e.Graphics.FillRectangle(new SolidBrush(HoverBackground), rc);
+                (e.ToolStrip as ToolStripDropDownMenu).ShowCheckMargin = true;
+                //var rc = new Rectangle(new Point(30, 0), new Size(e.Item.Size.Width - 35, e.Item.Size.Height));
+                var rc = new Rectangle(new Point(0, 0), new Size(e.Item.Size.Width, e.Item.Size.Height));
+                e.Graphics.FillRectangle(new SolidBrush(Color.GreenYellow), rc);
             }
         }
 
@@ -66,7 +67,7 @@ namespace HomeWizardTray
 
         protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
         {
-            e.Graphics.FillRectangle(new SolidBrush(MarginBackground), e.AffectedBounds);
+            e.Graphics.FillRectangle(new SolidBrush(Color.Red), e.AffectedBounds);
         }
     }
 }
