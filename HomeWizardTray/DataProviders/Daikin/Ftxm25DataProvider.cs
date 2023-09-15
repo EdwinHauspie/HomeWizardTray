@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using HomeWizardTray.DataProviders.Daikin.Constants;
 using Newtonsoft.Json;
 using Dic = System.Collections.Generic.Dictionary<string, string>;
 

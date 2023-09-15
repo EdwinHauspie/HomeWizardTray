@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HomeWizardTray.DataProviders.HomeWizard
+namespace HomeWizardTray.DataProviders.HomeWizard.Dto
 {
     internal sealed class DataResponse
     {

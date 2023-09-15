@@ -29,7 +29,7 @@ namespace HomeWizardTray
         public string Ftxm25IpAddress {get; set;}
         public string P1MeterIpAddress { get; set; }
         public string SunnyBoyIpAddress { get; set; }
-        public User SunnyBoyUser { get; set; }
+        public UserType SunnyBoyUser { get; set; }
         public string SunnyBoyPass { get; set; }
     }
 }

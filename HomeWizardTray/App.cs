@@ -35,23 +35,23 @@ namespace HomeWizardTray
 
             var menu = new[]
             {
-                new MenuItem("Airco", new []
+                new Menu.Menu("Airco", new []
                 {
-                    new MenuItem("Presets", new []
+                    new Menu.Menu("Presets", new []
                     {
-                        new MenuItem("Max", async (s, e) => { await _ftxm25DataProvider.SetMax(); }),
-                        new MenuItem("Normal", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
-                        new MenuItem("Eco", async (s, e) => { await _ftxm25DataProvider.SetEco(); }),
-                        new MenuItem("Dehumidify", async (s, e) => { await _ftxm25DataProvider.SetDehumidify(); }),
+                        new Menu.Menu("Max", async (s, e) => { await _ftxm25DataProvider.SetMax(); }),
+                        new Menu.Menu("Normal", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
+                        new Menu.Menu("Eco", async (s, e) => { await _ftxm25DataProvider.SetEco(); }),
+                        new Menu.Menu("Dehumidify", async (s, e) => { await _ftxm25DataProvider.SetDehumidify(); }),
                     }),
-                    new MenuItem("Power", new []
+                    new Menu.Menu("Power", new []
                     {
-                        new MenuItem("On", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
-                        new MenuItem("Off", async (s, e) => { await _ftxm25DataProvider.SetOff(); })
+                        new Menu.Menu("On", async (s, e) => { await _ftxm25DataProvider.SetLevel2(); }),
+                        new Menu.Menu("Off", async (s, e) => { await _ftxm25DataProvider.SetOff(); })
                     }),
-                    new MenuItem("Status", onAircoStatus)
+                    new Menu.Menu("Status", onAircoStatus)
                 }),
-                new MenuItem("Quit", onQuit)
+                new Menu.Menu("Quit", onQuit)
             };
 
             TrayIcon = new NotifyIcon { Text = "SunnyTray", Icon = Resources.SunIcon, Visible = true, ContextMenuStrip = MenuBuilder.Build(menu) };

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using HomeWizardTray.DataProviders.HomeWizard.Dto;
+using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 

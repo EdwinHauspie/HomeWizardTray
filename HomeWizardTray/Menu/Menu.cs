@@ -2,19 +2,19 @@
 
 namespace HomeWizardTray.Menu
 {
-    internal sealed class MenuItem
+    internal sealed class Menu
     {
         public string Caption { get; set; }
-        public MenuItem[] SubMenu { get; set; } = Array.Empty<MenuItem>();
+        public Menu[] SubMenu { get; set; } = Array.Empty<Menu>();
         public EventHandler OnClick { get; set; }
 
-        public MenuItem(string caption, EventHandler onClick)
+        public Menu(string caption, EventHandler onClick)
         {
             Caption = caption;
             OnClick = onClick;
         }
 
-        public MenuItem(string caption, MenuItem[] subMenu)
+        public Menu(string caption, Menu[] subMenu)
         {
             Caption = caption;
             SubMenu = subMenu;

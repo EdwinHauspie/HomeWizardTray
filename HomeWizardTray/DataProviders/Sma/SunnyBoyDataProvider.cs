@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
+using HomeWizardTray.DataProviders.Sma.Dto;
 
 namespace HomeWizardTray.DataProviders.Sma
 {
@@ -48,7 +49,7 @@ namespace HomeWizardTray.DataProviders.Sma
 
         /// <summary>
         /// Method to logout from Sunny Boy. This is not stricly needed, but consider:
-        /// - The amount of active sid keys in SMA device is limited.
+        /// - The amount of simultaneous active sid keys in SMA device is limited.
         /// - The SMA device will invalidate sid keys after some time.
         /// </summary>
         public async Task Logout()
@@ -64,7 +65,9 @@ namespace HomeWizardTray.DataProviders.Sma
 
         public async Task<int> GetActivePower()
         {
-            if (DateTime.Now - SidStamp > TimeSpan.FromMinutes(60)) await Logout(); // Prevent using invalidated sid
+            // Prevent using invalidated sids. TODO Figure out better way? Just use 1 hour for now.
+            if (DateTime.Now - SidStamp > TimeSpan.FromMinutes(60)) await Logout();
+            
             if (Sid == null) await Login();
 
             ClearAndSetHeaders();
@@ -77,8 +80,7 @@ namespace HomeWizardTray.DataProviders.Sma
 
             var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/dyn/getValues.json?sid={Sid}", postData);
             var responseBody = await response.Content.ReadAsStringAsync();
-
-            //if (responseBody.Contains("err")) throw...
+            // TODO if (responseBody.Contains("err")) throw...
 
             var watt = responseBody.Split(':').Last().Split('}').First();
             return watt == "null" ? 0 : int.Parse(watt);
@@ -94,10 +96,11 @@ namespace HomeWizardTray.DataProviders.Sma
             _httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
             _httpClient.DefaultRequestHeaders.Add("Referer", $"{_baseUrl}/");
 
-            if (Sid != null) // If we have a sid, construct and add the "auth cookie"
+            if (Sid != null) // We have a sid, so construct and add the "auth" cookie
             {
-                var user = UserInfos.Get(_appSettings.SunnyBoyUser);
-                var user443 = new { role = new { bitMask = 4, title = _appSettings.SunnyBoyUser, loginLevel = user.LoginLevel }, username = user.Tag, sid = Sid };
+                var user = UserInfo.Get(_appSettings.SunnyBoyUser);
+                var role = new { bitMask = 4, title = _appSettings.SunnyBoyUser, loginLevel = user.LoginLevel };
+                var user443 = new { role, username = user.Tag, sid = Sid };
 
                 var cookieValues = new Dictionary<string, object>
                 {
@@ -108,8 +111,8 @@ namespace HomeWizardTray.DataProviders.Sma
                     { "deviceSid443", Sid },
                 };
 
-                var cookie = cookieValues
-                    .Aggregate("", (x, y) => x + $"{y.Key}={Uri.EscapeDataString(JsonConvert.SerializeObject(y.Value))}; ");
+                static string escape(object obj) => Uri.EscapeDataString(JsonConvert.SerializeObject(obj));
+                var cookie = cookieValues.Aggregate("", (x, y) => x + $"{y.Key}={escape(y.Value)}; ");
 
                 _httpClient.DefaultRequestHeaders.Add("Cookie", cookie);
             }
