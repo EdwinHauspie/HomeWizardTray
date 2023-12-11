@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeWizardTray.Menu
+namespace HomeWizardTray
 {
     internal sealed class Menu
     {

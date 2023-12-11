@@ -49,7 +49,7 @@ namespace HomeWizardTray
                     {
                         Log.Information($"App running in {ctx.HostingEnvironment.EnvironmentName} environment.");
 
-                        //if (ctx.HostingEnvironment.IsDevelopment())
+                        if (ctx.HostingEnvironment.IsDevelopment())
                         {
                             builder.AddUserSecrets<App>();
                         }

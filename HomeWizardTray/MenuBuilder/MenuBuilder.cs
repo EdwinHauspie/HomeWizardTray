@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace HomeWizardTray.Menu
+namespace HomeWizardTray
 {
     internal static class MenuBuilder
     {
